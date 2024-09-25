@@ -1,0 +1,32 @@
+{
+    "theme_color": "#fff",
+    "background_color": "#fff",
+    "display": "standalone",
+    "scope": "/",
+    "start_url": "/",
+    "name": "Gael Richard - D\u00e9veloppeur Fullstack",
+    "short_name": "Gael Dev",
+    "description": "D\u00e9veloppeur Web Fullstack, je suis passionn\u00e9 par le d\u00e9veloppement web. Je suis sp\u00e9cialis\u00e9 dans la cr\u00e9ation de sites web avec pour but de satisfaire les besoins de mes clients.",
+    "icons": [
+        {
+            "src": "/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/icon-256x256.png",
+            "sizes": "256x256",
+            "type": "image/png"
+        },
+        {
+            "src": "/icon-384x384.png",
+            "sizes": "384x384",
+            "type": "image/png"
+        },
+        {
+            "src": "/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
