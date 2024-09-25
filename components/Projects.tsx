@@ -42,7 +42,9 @@ const Projects: React.FC = () => {
 
     const fetchData = async () => {
       try {
-        const response = await ky.get(`${process.env.HOST}/api/projects`);
+        const response = await ky.get(
+          `${process.env.NEXT_PUBLIC_HOST}/api/projects`
+        );
         const data: Project[] = await response.json();
 
         // Sort by timestamp initially
@@ -56,7 +58,7 @@ const Projects: React.FC = () => {
         const likesData = await Promise.all(
           data.map(async (project) => {
             const response = await ky.get(
-              `${process.env.HOST}/api/likes/${project._id}`
+              `${process.env.NEXT_PUBLIC_HOST}/api/likes/${project._id}`
             );
             const likes: number[] = await response.json();
             return { id: project._id, count: likes.length };
@@ -87,7 +89,7 @@ const Projects: React.FC = () => {
 
     try {
       const method = newHeartState ? "POST" : "DELETE";
-      const likeEndpoint = `${process.env.HOST}/api/likes/${id}`;
+      const likeEndpoint = `${process.env.NEXT_PUBLIC_HOST}/api/likes/${id}`;
 
       await ky(likeEndpoint, {
         method,
@@ -102,7 +104,9 @@ const Projects: React.FC = () => {
         });
       }
 
-      const response = await ky.get(`${process.env.HOST}/api/likes/${id}`);
+      const response = await ky.get(
+        `${process.env.NEXT_PUBLIC_HOST}/api/likes/${id}`
+      );
       const data: number[] = await response.json();
       setLikes((prevLikes) => ({ ...prevLikes, [id]: data.length }));
     } catch (error: any) {

@@ -57,7 +57,9 @@ export default function Project({ params }: { params: { id: string } }) {
 
     const fetchData = async () => {
       try {
-        const response = await ky.get(`${process.env.HOST}/api/projects`);
+        const response = await ky.get(
+          `${process.env.NEXT_PUBLIC_HOST}/api/projects`
+        );
         const data: ProjectData[] = await response.json();
         const filteredData = data.filter(
           (project) => project._id === params.id
@@ -74,21 +76,22 @@ export default function Project({ params }: { params: { id: string } }) {
     const fetchLikes = async () => {
       try {
         const response = await ky.get(
-          `${process.env.HOST}/api/likes/${params.id}`
+          `${process.env.NEXT_PUBLIC_HOST}/api/likes/${params.id}`
         );
-        const data: LikesData = await response.json();
-        setLikes((prevLikes: LikesData) => ({
+        const data: any[] = await response.json();
+        setLikes((prevLikes) => ({
           ...prevLikes,
           [params.id]: data,
         }));
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching likes:", error);
+        // Consider adding user-friendly error handling here
       }
+    };
 
     fetchLikes();
     fetchData();
   }, [params.id]);
-
 
   const handleShowImages = () => {
     setNumberShowImage((prevNumber) => prevNumber + 2);
@@ -112,7 +115,7 @@ export default function Project({ params }: { params: { id: string } }) {
 
     if (confirmation.isConfirmed) {
       try {
-        await ky.delete(`${process.env.HOST}/api/projects/${id}`, {
+        await ky.delete(`${process.env.NEXT_PUBLIC_HOST}/api/projects/${id}`, {
           json: { userId },
           headers: {
             Authorization: `Bearer ${token}`,
@@ -167,7 +170,7 @@ export default function Project({ params }: { params: { id: string } }) {
   return (
     <>
       <Header />
-      <main className=" min-h-svh">
+      <main className="min-h-svh">
         <Spacing size={40} />
         {isLoading ? (
           <div className="size-full m-auto flex justify-center items-center">
@@ -176,7 +179,7 @@ export default function Project({ params }: { params: { id: string } }) {
         ) : error ? (
           <div className="size-full flex justify-center items-center">
             <Alert
-              variant={"destructive"}
+              variant="destructive"
               className="w-4/5 m-auto border-foreground/50 bg-red-600/40 shadow-pxl"
             >
               <RiErrorWarningFill className="text-2xl md:text-xl" />
@@ -198,10 +201,10 @@ export default function Project({ params }: { params: { id: string } }) {
                 <Link
                   href={project.url}
                   target="_blank"
+                  rel="noopener noreferrer"
                   className="relative flex gap-2 hover:text-primary transition-colors duration-500 ease-in-out"
                 >
                   <h1 className="text-4xl md:text-6xl">{project.title}</h1>
-
                   <FiExternalLink className="absolute top-1 -right-4 size-3 md:size-5 md:-right-6" />
                 </Link>
                 <Spacing size={20} />
@@ -220,9 +223,9 @@ export default function Project({ params }: { params: { id: string } }) {
                       <img
                         key={index}
                         src={image}
-                        alt={project.title}
+                        alt={`${project.title} - Image ${index + 1}`}
                         onClick={() => handleImageClick(image)}
-                        className="relative w-full md:w-4/5 lg:w-[400px] xl:w-[500px] rounded-lg shadow-pxl transition-transform hover:scale-105 duration-700 ease-in-out"
+                        className="relative w-full md:w-4/5 lg:w-[400px] xl:w-[500px] rounded-lg shadow-pxl transition-transform hover:scale-105 duration-700 ease-in-out cursor-pointer"
                       />
                     ))}
                 </div>
@@ -234,7 +237,7 @@ export default function Project({ params }: { params: { id: string } }) {
                       Il reste {project.images.length - numberShowImage} images.
                     </span>
                     <button
-                      className=" w-40 m-auto rounded-lg shadow-pxl border border-foreground/10 p-2 bg-primary/80 text-white transition-all duration-500 ease-in-out hover:bg-primary/50 hover:scale-95"
+                      className="w-40 m-auto rounded-lg shadow-pxl border border-foreground/10 p-2 bg-primary/80 text-white transition-all duration-500 ease-in-out hover:bg-primary/50 hover:scale-95"
                       onClick={handleShowImages}
                     >
                       Afficher plus
@@ -247,7 +250,7 @@ export default function Project({ params }: { params: { id: string } }) {
                         Toutes les images sont affichées.
                       </span>
                       <button
-                        className=" w-40 m-auto rounded-lg shadow-pxl p-2 bg-primary/80 text-white transition-all duration-500 ease-in-out hover:bg-primary/50 hover:scale-95"
+                        className="w-40 m-auto rounded-lg shadow-pxl p-2 bg-primary/80 text-white transition-all duration-500 ease-in-out hover:bg-primary/50 hover:scale-95"
                         onClick={handleHideImages}
                       >
                         Afficher moins
@@ -261,15 +264,15 @@ export default function Project({ params }: { params: { id: string } }) {
                   <div className="w-full flex items-center justify-center gap-12 md:gap-24">
                     <button
                       onClick={() => handleDelete(project._id)}
-                      className=" w-32 bg-primary/60 hover:bg-primary/30 transition-colors duration-500 ease-in-out text-white px-4 py-2 rounded-lg shadow-pxl"
+                      className="w-32 bg-primary/60 hover:bg-primary/30 transition-colors duration-500 ease-in-out text-white px-4 py-2 rounded-lg shadow-pxl"
                     >
                       Supprimer
                     </button>
                     <button
                       onClick={() => handleModify(project._id)}
-                      className=" w-32 bg-primary/60 hover:bg-primary/30 transition-colors duration-500 ease-in-out text-white px-4 py-2 rounded-lg shadow-pxl"
+                      className="w-32 bg-primary/60 hover:bg-primary/30 transition-colors duration-500 ease-in-out text-white px-4 py-2 rounded-lg shadow-pxl"
                     >
-                      Modifer
+                      Modifier
                     </button>
                   </div>
                 )}

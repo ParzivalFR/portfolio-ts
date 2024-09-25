@@ -40,7 +40,7 @@ export function TokenProvider({ children }: TokenProviderProps): JSX.Element {
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     const storedUserId = localStorage.getItem("userId");
-    if (storedToken && storedUserId) {
+    if (!storedToken && !storedUserId) {
       setToken(storedToken);
       setUserId(storedUserId);
     }

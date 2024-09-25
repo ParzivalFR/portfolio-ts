@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import ky from "ky";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState, ChangeEvent, FormEvent } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import Swal from "sweetalert2";
 
@@ -52,7 +52,7 @@ const EditProjectForm = () => {
         if (!token) throw new Error("No token available.");
 
         const project = await ky
-          .get(`${process.env.HOST}/api/projects/${id}`, {
+          .get(`${process.env.NEXT_PUBLIC_HOST}/api/projects/${id}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -154,7 +154,7 @@ const EditProjectForm = () => {
       if (!token) throw new Error("No token available.");
 
       const response = await ky
-        .put(`${process.env.HOST}/api/projects/${id}`, {
+        .put(`${process.env.NEXT_PUBLIC_HOST}/api/projects/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

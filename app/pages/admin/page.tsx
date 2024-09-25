@@ -103,7 +103,7 @@ const AddProjectForm: React.FC = () => {
       if (!token) throw new Error("No token available.");
 
       const response = await ky
-        .post(`${process.env.HOST}/api/projects`, {
+        .post(`${process.env.NEXT_PUBLIC_HOST}/api/projects`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

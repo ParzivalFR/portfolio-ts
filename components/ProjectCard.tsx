@@ -34,7 +34,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               alt={project.title}
               width={400}
               height={200}
-              className="object-cover"
+              className="object-cover w-full"
             />
           </div>
         </Link>
