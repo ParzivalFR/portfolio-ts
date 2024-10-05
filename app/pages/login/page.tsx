@@ -20,7 +20,7 @@ const Login = () => {
   const { token, login } = useToken();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [disabled, setDisabled] = useState<boolean>(true);
+  const [disabled, setDisabled] = useState<boolean>(false);
 
   useEffect(() => {
     if (token) {
@@ -32,7 +32,7 @@ const Login = () => {
     e.preventDefault();
     try {
       const response: AuthResponse = await ky
-        .post(`${process.env.HOST}/api/auth/signup`, {
+        .post(`${process.env.NEXT_PUBLIC_HOST}/api/users/signup`, {
           json: { email, password },
         })
         .json();
@@ -59,7 +59,7 @@ const Login = () => {
     e.preventDefault();
     try {
       const response: AuthResponse = await ky
-        .post(`${process.env.HOST}/api/auth/login`, {
+        .post(`${process.env.NEXT_PUBLIC_HOST}/api/users/login`, {
           json: { email, password },
         })
         .json();

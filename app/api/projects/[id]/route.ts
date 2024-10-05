@@ -75,13 +75,12 @@ export async function DELETE(
   }
 }
 
-// Update a project
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const body = await request.json();
+    const formData = await request.formData();
     const project = await prisma.project.findUnique({
       where: { id: params.id },
     });
@@ -90,38 +89,66 @@ export async function PUT(
       return NextResponse.json({ error: "Projet non trouvé" }, { status: 404 });
     }
 
-    if (body.userId !== project.userId) {
+    const userId = formData.get("userId");
+    if (userId !== project.userId) {
       return NextResponse.json({ message: "Accès refusé !" }, { status: 403 });
     }
 
     const currentCover = project.cover;
     const currentImages = project.images;
-    const updatedCover = body.cover || currentCover;
-    const updatedImages = body.images || currentImages;
-    const deletedImages = body.deletedImages || [];
+    const deletedImages = JSON.parse(
+      (formData.get("deletedImages") as string) || "[]"
+    );
 
-    const deleteImage = async (publicId: string) => {
-      await cloudinary.uploader.destroy(publicId);
+    const uploadToCloudinary = async (file: File) => {
+      const buffer = await file.arrayBuffer();
+      const base64File = Buffer.from(buffer).toString("base64");
+      const result = await cloudinary.uploader.upload(
+        `data:${file.type};base64,${base64File}`
+      );
+      return result.secure_url;
     };
 
-    if (updatedCover !== currentCover && currentCover) {
-      const coverPublicId = currentCover.split("/").pop()?.split(".")[0];
-      if (coverPublicId) await deleteImage(coverPublicId);
+    const deleteFromCloudinary = async (url: string) => {
+      const publicId = url.split("/").pop()?.split(".")[0];
+      if (publicId) await cloudinary.uploader.destroy(publicId);
+    };
+
+    // Handle cover image
+    let updatedCover = currentCover;
+    const newCover = formData.get("cover") as File;
+    if (newCover && newCover instanceof File) {
+      updatedCover = await uploadToCloudinary(newCover);
+      if (currentCover) await deleteFromCloudinary(currentCover);
     }
 
+    // Handle project images
+    let updatedImages = currentImages;
+    const newImages = formData.getAll("images") as File[];
+    if (newImages.length > 0) {
+      const uploadedNewImages = await Promise.all(
+        newImages.map(uploadToCloudinary)
+      );
+      updatedImages = [...currentImages, ...uploadedNewImages];
+    }
+
+    // Delete images
     for (const image of deletedImages) {
-      const imagePublicId = image.split("/").pop()?.split(".")[0];
-      if (imagePublicId) await deleteImage(imagePublicId);
+      await deleteFromCloudinary(image);
+      updatedImages = updatedImages.filter((img) => img !== image);
     }
 
     const updatedProject = await prisma.project.update({
       where: { id: params.id },
       data: {
-        ...body,
+        title: formData.get("title") as string,
+        shortDescription: formData.get("shortDescription") as string,
+        description: formData.get("description") as string,
+        year: parseInt(formData.get("year") as string),
+        skills: (formData.get("skills") as string).split(","),
+        url: formData.get("url") as string,
         cover: updatedCover,
-        images: updatedImages.filter(
-          (image: string) => !deletedImages.includes(image)
-        ),
+        images: updatedImages,
       },
     });
 
@@ -133,7 +160,7 @@ export async function PUT(
     console.error("Erreur lors de la mise à jour du projet:", error);
     return NextResponse.json(
       { error: "Erreur lors de la mise à jour du projet" },
-      { status: 404 }
+      { status: 500 }
     );
   }
 }

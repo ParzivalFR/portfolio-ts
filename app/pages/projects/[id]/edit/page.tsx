@@ -133,14 +133,22 @@ const EditProjectForm = () => {
     try {
       const formDataToSend = new FormData();
       for (const key in formData) {
-        if (Array.isArray(formData[key as keyof FormData])) {
-          (formData[key as keyof FormData] as Array<any>).forEach((file) =>
-            formDataToSend.append(key, file)
-          );
-        } else {
+        if (key === "skills" && Array.isArray(formData.skills)) {
+          formDataToSend.append("skills", formData.skills.join(","));
+        } else if (Array.isArray(formData[key as keyof FormData])) {
+          (formData[key as keyof FormData] as Array<any>).forEach((item) => {
+            if (item instanceof File) {
+              formDataToSend.append(key, item);
+            } else {
+              formDataToSend.append(key, item.toString());
+            }
+          });
+        } else if (formData[key as keyof FormData] instanceof File) {
+          formDataToSend.append(key, formData[key as keyof FormData] as File);
+        } else if (formData[key as keyof FormData] !== null) {
           formDataToSend.append(
             key,
-            formData[key as keyof FormData] as string | Blob
+            formData[key as keyof FormData]!.toString()
           );
         }
       }
@@ -173,14 +181,15 @@ const EditProjectForm = () => {
       router.push("/");
     } catch (error) {
       console.error("Erreur lors de la mise à jour du projet:", error);
+      let errorMessage = "Une erreur inconnue est survenue.";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
       Swal.fire({
         icon: "error",
         title: "Erreur",
-        text: `Une erreur est survenue lors de la mise à jour du projet: ${
-          (error as Error).message
-        }`,
-        showConfirmButton: false,
-        timer: 2000,
+        text: `Une erreur est survenue lors de la mise à jour du projet: ${errorMessage}`,
+        showConfirmButton: true,
       });
     }
   };

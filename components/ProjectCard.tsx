@@ -12,6 +12,7 @@ import { HiHashtag } from "react-icons/hi";
 import { Project } from "./Projects"; // Importe l'interface Project
 
 interface ProjectCardProps {
+  id: string;
   project: Project;
   heartState: boolean;
   likes: number;
@@ -19,6 +20,7 @@ interface ProjectCardProps {
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({
+  id,
   project,
   heartState,
   likes,
@@ -27,7 +29,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   return (
     <Card className="relative flex flex-col justify-between h-full bg-foreground/5 border-none shadow-pxl">
       <CardHeader className="p-4">
-        <Link href={`/pages/projects/${project._id}`}>
+        <Link href={`/pages/projects/${project.id}`}>
           <div className="shadow-pxl w-full h-36 rounded-xl flex justify-center items-center overflow-hidden">
             <Image
               src={project.cover}
@@ -69,7 +71,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
             className={`text-2xl cursor-pointer transition-all transform hover:scale-110 duration-500 ${
               heartState ? "text-primary/80" : "text-primary/20"
             }`}
-            onClick={() => onToggleHeart(project._id)}
+            onClick={() => onToggleHeart(project.id)}
           />
         </div>
       </CardFooter>

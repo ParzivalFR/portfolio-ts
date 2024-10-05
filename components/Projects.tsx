@@ -15,7 +15,7 @@ import { Button } from "./ui/button";
 
 // Define the Project type
 export interface Project {
-  _id: string;
+  id: string;
   title: string;
   shortDescription: string;
   cover: string;
@@ -58,10 +58,10 @@ const Projects: React.FC = () => {
         const likesData = await Promise.all(
           data.map(async (project) => {
             const response = await ky.get(
-              `${process.env.NEXT_PUBLIC_HOST}/api/likes/${project._id}`
+              `${process.env.NEXT_PUBLIC_HOST}/api/likes/${project.id}`
             );
             const likes: number[] = await response.json();
-            return { id: project._id, count: likes.length };
+            return { id: project.id, count: likes.length };
           })
         );
 
@@ -188,10 +188,10 @@ const Projects: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-4 gap-10 w-4/5 m-auto">
               {fetchedData.slice(0, showProjects).map((project) => (
                 <ProjectCard
-                  key={project._id}
+                  key={project.id}
                   project={project}
-                  heartState={heartStates[project._id]}
-                  likes={likes[project._id]}
+                  heartState={heartStates[project.id]}
+                  likes={likes[project.id]}
                   onToggleHeart={toggleColor}
                 />
               ))}

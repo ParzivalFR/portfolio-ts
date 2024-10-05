@@ -24,7 +24,7 @@ import { VscListSelection } from "react-icons/vsc";
 import Swal from "sweetalert2";
 
 interface ProjectData {
-  _id: string;
+  id: string;
   title: string;
   url: string;
   images: string[];
@@ -38,6 +38,7 @@ interface LikesData {
 
 export default function Project({ params }: { params: { id: string } }) {
   const router = useRouter();
+  console.log(params.id);
 
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [numberShowImage, setNumberShowImage] = useState<number>(2);
@@ -61,9 +62,7 @@ export default function Project({ params }: { params: { id: string } }) {
           `${process.env.NEXT_PUBLIC_HOST}/api/projects`
         );
         const data: ProjectData[] = await response.json();
-        const filteredData = data.filter(
-          (project) => project._id === params.id
-        );
+        const filteredData = data.filter((project) => project.id === params.id);
         console.log(filteredData);
         setFetchedData(filteredData);
         setIsLoading(false);
@@ -122,7 +121,7 @@ export default function Project({ params }: { params: { id: string } }) {
           },
         });
         setFetchedData((prevData) =>
-          prevData.filter((project) => project._id !== id)
+          prevData.filter((project) => project.id !== id)
         );
         await Swal.fire(
           "Projet supprimé !",
@@ -195,7 +194,7 @@ export default function Project({ params }: { params: { id: string } }) {
           <section className="w-4/5 m-auto">
             {fetchData.map((project) => (
               <div
-                key={project._id}
+                key={project.id}
                 className="flex flex-col justify-center items-center w-full"
               >
                 <Link
@@ -211,7 +210,7 @@ export default function Project({ params }: { params: { id: string } }) {
                 <p>
                   Ce projet a été liké{" "}
                   <span className="bg-foreground/80 rounded px-1 sm:px-2 text-background text-sm hover:bg-foreground/50 transition-colors duration-500 ease-in-out">
-                    {likes[project._id] ? likes[project._id].length : 0}
+                    {likes[project.id] ? likes[project.id].length : 0}
                   </span>{" "}
                   fois.
                 </p>
@@ -263,13 +262,13 @@ export default function Project({ params }: { params: { id: string } }) {
                 {token && (
                   <div className="w-full flex items-center justify-center gap-12 md:gap-24">
                     <button
-                      onClick={() => handleDelete(project._id)}
+                      onClick={() => handleDelete(project.id)}
                       className="w-32 bg-primary/60 hover:bg-primary/30 transition-colors duration-500 ease-in-out text-white px-4 py-2 rounded-lg shadow-pxl"
                     >
                       Supprimer
                     </button>
                     <button
-                      onClick={() => handleModify(project._id)}
+                      onClick={() => handleModify(project.id)}
                       className="w-32 bg-primary/60 hover:bg-primary/30 transition-colors duration-500 ease-in-out text-white px-4 py-2 rounded-lg shadow-pxl"
                     >
                       Modifier
